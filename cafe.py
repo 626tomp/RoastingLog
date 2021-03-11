@@ -21,13 +21,3 @@ class Cafe:
     
     def getName(self):
         return self.name
-
-
-def testing():
-    gb = Cafe('Georgie Boys')
-
-    print(gb.getName())
-
-
-# main program
-testing()
