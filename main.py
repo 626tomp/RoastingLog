@@ -14,6 +14,17 @@ import program
 
 
 # basic testing
-gb = program.Cafe('Georgie Boys')
+testProg = program.Program()
 
-print(gb.getName())
+testProg.addCoffee("Colombia")
+testProg.addCoffee("Nicaragua")
+
+#print(testProg.getCoffees())
+
+seasonalBlend = {"Colombia": 80, "Nicaragua":20}
+testProg.addBlend("Seasonal", seasonalBlend)
+
+
+testProg.addCafe("Georgie Boys", "Seasonal")
+
+
