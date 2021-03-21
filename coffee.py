@@ -27,6 +27,9 @@ class Blend:
     
     def updateBlend(self, name, greenCoffee):
         self.name = name
+
+    def getCoffeeList(self):
+        return self.components
     
 class Component:
     def __init__(self, green, proportion):

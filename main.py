@@ -22,9 +22,15 @@ testProg.addCoffee("Nicaragua")
 #print(testProg.getCoffees())
 
 seasonalBlend = {"Colombia": 80, "Nicaragua":20}
-testProg.addBlend("Seasonal", seasonalBlend)
+testProg.addBlend("Seasonal Blend", seasonalBlend)
 
 
-testProg.addCafe("Georgie Boys", "Seasonal")
+testProg.addCafe("Georgie Boys", "Seasonal Blend")
+
+
+# this needs to go, need to be able to call a single function to do all this.
+print(testProg.getCafe("Georgie Boys").getBlend().getBlendName())
+
+print(testProg.calcCoffeeNeeded())
 
 

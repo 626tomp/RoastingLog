@@ -20,7 +20,7 @@ class Program:
         blendName = None
         for item in self.blends:
             if (blend == item.getBlendName()):
-                blendName = blend
+                blendName = item
 
         if (blendName == None):
             print("Blend does not exist")
@@ -77,3 +77,16 @@ class Program:
 
     def getCafes(self):
         return self.cafes
+    
+    def getCafe(self, name):
+        for i in self.cafes:
+            if (i.getName() == name):
+                return i
+        return None
+
+    def calcCoffeeNeeded(self):
+        coffeeNeeded = {}
+        for i in self.cafes:
+            i.calcCoffeeNeeded(coffeeNeeded)
+
+        return coffeeNeeded
