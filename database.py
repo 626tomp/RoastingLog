@@ -27,7 +27,7 @@ def build_database(conn):
                         '''
 
     blendTable = '''
-                CREATE TABLE IF NOT EXISTS blends (
+                CREATE TABLE IF NOT EXISTS blend (
                     b_id integer PRIMARY KEY,
                     name text NOT NULL UNIQUE,
                     quantity integer CHECK (quantity >= 0)
@@ -73,6 +73,7 @@ def insert_green(conn, name, quantity):
     try:
         cur = conn.cursor()
         cur.execute(query, (None, name, quantity))
+        conn.commit()
     except Error as error:
         print(error)
         print("There was a problem inserting into the database")
@@ -104,7 +105,156 @@ def query_green(conn):
         print(error)
         print("There was a problem querying the green table")
     
-    return results
+    values = []
+    for item in results:
+        curr = {}
+        curr['id'] = item[0]
+        curr['name'] = item[1]
+        curr['quantity'] = item[2]
+        values.append(curr)
+
+    return values
+
+def insert_blend(conn, name, quantity):
+    query = "INSERT INTO blend values (?, ?, ?);"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (None, name, quantity))
+        conn.commit()
+    except Error as error:
+        print(error)
+        print("There was a problem inserting into the database")
+
+def update_blend_quantity(conn, b_id, quantity):
+    query = "UPDATE blend set quantity = ? where b_id = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (quantity, b_id))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the blend quantity")
+    
+def update_blend_name(conn, b_id, name):
+    query = "UPDATE blend set name = ? where b_id = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (name, b_id))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the blend name")
+
+def query_blend(conn):
+    query = "select * from blend;"
+    try:
+        cur = conn.cursor()
+        results = cur.execute(query)
+    except Error as error:
+        print(error)
+        print("There was a problem querying the blend table")
+    
+    values = []
+    for item in results:
+        curr = {}
+        curr['id'] = item[0]
+        curr['name'] = item[1]
+        curr['quantity'] = item[2]
+        values.append(curr)
+
+    return values
+
+def insert_contains(conn, green, blend, percentage):
+    query = "INSERT INTO contains values (?, ?, ?);"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (green, blend, percentage))
+        conn.commit()
+    except Error as error:
+        print(error)
+        print("There was a problem inserting into the database")
+
+def update_contains_percentage(conn, blend, green, percentage):
+    query = "UPDATE contains set percentage = ? where blend = ? AND green = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (percentage, blend, green))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the contains quantity")
+    
+def update_contains_green(conn, blend, green):
+    query = "UPDATE contains set green = ? where blend = ? and green = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (green, blend, green))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the contains name")
+
+def query_contains(conn):
+    query = "select * from contains;"
+    try:
+        cur = conn.cursor()
+        results = cur.execute(query)
+    except Error as error:
+        print(error)
+        print("There was a problem querying the contains table")
+    
+    values = []
+    for item in results:
+        curr = {}
+        curr['green'] = item[0]
+        curr['blend'] = item[1]
+        curr['percentage'] = item[2]
+        values.append(curr)
+
+    return values
+
+def insert_cafe(conn, name, blend):
+    query = "INSERT INTO cafe values (?, ?, ?);"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (None, name, blend))
+        conn.commit()
+    except Error as error:
+        print(error)
+        print("There was a problem inserting into the database")
+
+def update_cafe_blend(conn, c_id, blend):
+    query = "UPDATE cafe set blend = ? where c_id = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (blend, c_id))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the contains quantity")
+    
+def update_cafe_name(conn, c_id, name):
+    query = "UPDATE cafe set name = ? where c_id = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (name, c_id))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the cafe name")
+
+def query_cafe(conn):
+    query = "select * from cafe;"
+    try:
+        cur = conn.cursor()
+        results = cur.execute(query)
+    except Error as error:
+        print(error)
+        print("There was a problem querying the cafe table")
+    
+    values = []
+    for item in results:
+        curr = {}
+        curr['id'] = item[0]
+        curr['name'] = item[1]
+        curr['blend'] = item[2]
+        values.append(curr)
+
+    return values
 
 
 def drop_tables(conn):
