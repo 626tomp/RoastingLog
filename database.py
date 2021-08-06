@@ -42,15 +42,16 @@ def insert_green(conn, name, quantity):
     query = "INSERT INTO green values (?, ?);"
     try:
         cur = conn.cursor()
-        cur.execute(query, g_id, name, quantity)
+        cur.execute(query, name, quantity)
     except Error as error:
         print(error)
         print("There was a problem inserting into the database")
 
 def update_green(conn, g_id, name, quantity):
+    pass
 
-
-def query_green(conn, g_id)
+def query_green(conn, g_id):
+    pass
 
 if __name__ == '__main__':
     pass
