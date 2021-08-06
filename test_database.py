@@ -10,6 +10,33 @@ def setup_database():
 
     return conn
 
+def create_green(conn):
+    db.insert_green(conn, "Colombia", 100)
+    db.insert_green(conn, "Nicaragua", 100)
+    db.insert_green(conn, "Brazil", 30)
+
+def create_blend(conn):
+    db.insert_blend(conn, "Seasonal", 100)
+    db.insert_blend(conn, "Hipster", 100)
+
+def create_contains(conn):
+    db.insert_contains(conn, 1, 1, 80)
+    db.insert_contains(conn, 2, 1, 20)
+
+    db.insert_contains(conn, 1, 2, 60)
+    db.insert_contains(conn, 3, 2, 40)
+
+def create_cafe(conn):
+    db.insert_cafe(conn, "Georgie Boys", 1, 150)
+    db.insert_cafe(conn, "Nine Yards", 1, 30)
+    db.insert_cafe(conn, "RSL Life", 2, 20)
+
+def populate_database(conn):
+    create_green(conn)
+    create_blend(conn)
+    create_contains(conn)
+    create_cafe(conn)
+
 def test_blends():
     conn = setup_database()
 
@@ -46,22 +73,10 @@ def test_green():
 
 def test_contains():
     conn = setup_database()
+    populate_database(conn)
 
-    db.insert_green(conn, "Colombia", 100)
-    db.insert_green(conn, "Nicaragua", 100)
-    db.insert_green(conn, "Brazil", 30)
     col, nic, bra = db.query_green(conn)
-
-    db.insert_blend(conn, "Seasonal", 100)
-    db.insert_blend(conn, "Hipster", 100)
     sea, hip = db.query_blend(conn)
-
-    db.insert_contains(conn, col['id'], sea['id'], 80)
-    db.insert_contains(conn, nic['id'], sea['id'], 20)
-
-    db.insert_contains(conn, col['id'], hip['id'], 60)
-    db.insert_contains(conn, bra['id'], hip['id'], 40)
-
     contains = db.query_contains(conn)
 
     print(contains)
@@ -91,3 +106,7 @@ def test_contains():
     assert( numHip == 2 )
     assert( numSea == 2 )
     #assert (1 == 0) # to see prints
+
+def test_cafe():
+    conn = setup_database()
+    populate_database(conn)

@@ -1,3 +1,11 @@
+#!/usr/bin/python3
+'''
+Written by Thomas Parish
+Contact: 1tomparish@gmail.com
+
+Where all the database tables are setup and where all the interaction with the 
+database occurs
+'''
 import sqlite3
 from sqlite3 import Error
 
@@ -50,6 +58,7 @@ def build_database(conn):
                     c_id integer PRIMARY KEY,
                     name text NOT NULL UNIQUE,
                     blend integer NOT NULL,
+                    volume integer CHECK (volume > 0),
                     FOREIGN KEY(blend) REFERENCES blends(b_id)
                 );
                 '''
@@ -209,11 +218,11 @@ def query_contains(conn):
 
     return values
 
-def insert_cafe(conn, name, blend):
-    query = "INSERT INTO cafe values (?, ?, ?);"
+def insert_cafe(conn, name, blend, volume):
+    query = "INSERT INTO cafe values (?, ?, ?, ?);"
     try:
         cur = conn.cursor()
-        cur.execute(query, (None, name, blend))
+        cur.execute(query, (None, name, blend, volume))
         conn.commit()
     except Error as error:
         print(error)
@@ -237,6 +246,15 @@ def update_cafe_name(conn, c_id, name):
         print(error)
         print("There was a problem updating the cafe name")
 
+def update_cafe_volume(conn, c_id, volume):
+    query = "UPDATE cafe set name = ? where volume = ?;"
+    try:
+        cur = conn.cursor()
+        cur.execute(query, (name, c_id))
+    except Error as error:
+        print(error)
+        print("There was a problem updating the cafe volume")
+
 def query_cafe(conn):
     query = "select * from cafe;"
     try:
@@ -252,6 +270,7 @@ def query_cafe(conn):
         curr['id'] = item[0]
         curr['name'] = item[1]
         curr['blend'] = item[2]
+        curr['volume'] = item[3]
         values.append(curr)
 
     return values
