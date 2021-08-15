@@ -139,6 +139,7 @@ def update_blend_quantity(conn, b_id, quantity):
     try:
         cur = conn.cursor()
         cur.execute(query, (quantity, b_id))
+        conn.commit()
     except Error as error:
         print(error)
         print("There was a problem updating the blend quantity")
@@ -148,6 +149,7 @@ def update_blend_name(conn, b_id, name):
     try:
         cur = conn.cursor()
         cur.execute(query, (name, b_id))
+        conn.commit()
     except Error as error:
         print(error)
         print("There was a problem updating the blend name")
@@ -247,10 +249,10 @@ def update_cafe_name(conn, c_id, name):
         print("There was a problem updating the cafe name")
 
 def update_cafe_volume(conn, c_id, volume):
-    query = "UPDATE cafe set name = ? where volume = ?;"
+    query = "UPDATE cafe set volume = ? where c_id = ?;"
     try:
         cur = conn.cursor()
-        cur.execute(query, (name, c_id))
+        cur.execute(query, (volume, c_id))
     except Error as error:
         print(error)
         print("There was a problem updating the cafe volume")

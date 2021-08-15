@@ -5,6 +5,8 @@ Contact: 1tomparish@gmail.com
 
 
 Object for the entire program
+
+NOT USED
 '''
 
 from cafe import *
