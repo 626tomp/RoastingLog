@@ -20,7 +20,6 @@ This will be a program to help keep track of roasting progress and calculate vol
 - [ ]  Allow cafes to have multiple blends / single origins
 - [ ]  Handle single origin roasts rather than just blends (might require a database rethink)
 - [ ]  Basic prediction on time to finish roasting (eg. roasts * 20 mins + current time)
-- [ ]  
 
 
 ### STRETCH 2
