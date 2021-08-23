@@ -4,3 +4,4 @@ Date,Time,Progress
 2021-08-15,2:00:00,Worked on the interface, up, and main structure there, but needs work on getting things to rerender through mainloop.
 2021-08-16,1:00:00,Worked on rewriting gui code in pysimplegui. Similar limitations, but seems to be easier to work with. Can restart the window over the top to get the functionality i need.
 2021-08-18,0:22:23,"Gui improvements, Displaying all the blends, and set up to select one and then able to edit it."
+2021-08-23,0:26:25,popup
