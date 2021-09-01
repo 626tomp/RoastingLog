@@ -5,3 +5,4 @@ Date,Time,Progress
 2021-08-16,1:00:00,Worked on rewriting gui code in pysimplegui. Similar limitations, but seems to be easier to work with. Can restart the window over the top to get the functionality i need.
 2021-08-18,0:22:23,"Gui improvements, Displaying all the blends, and set up to select one and then able to edit it."
 2021-08-23,0:26:25,popup
+2021-09-01,1:00:07,predictor and its own gui
