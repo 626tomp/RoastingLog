@@ -16,8 +16,8 @@ def create_green(conn):
     db.insert_green(conn, "Brazil", 30)
 
 def create_blend(conn):
-    db.insert_blend(conn, "Seasonal", 100)
-    db.insert_blend(conn, "Hipster", 100)
+    db.insert_blend(conn, "Seasonal", 100, 1)
+    db.insert_blend(conn, "Hipster", 100, 0)
 
 def create_contains(conn):
     db.insert_contains(conn, 1, 1, 80)
@@ -40,7 +40,7 @@ def populate_database(conn):
 def test_blends():
     conn = setup_database()
 
-    db.insert_blend(conn, "Seasonal", 100)
+    db.insert_blend(conn, "Seasonal", 100, 0)
     blends = db.query_blend(conn)
 
     assert(len(blends) == 1)

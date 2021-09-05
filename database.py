@@ -38,7 +38,8 @@ def build_database(conn):
                 CREATE TABLE IF NOT EXISTS blend (
                     b_id integer PRIMARY KEY,
                     name text NOT NULL UNIQUE,
-                    quantity integer CHECK (quantity >= 0)
+                    quantity integer CHECK (quantity >= 0),
+                    postRoast integer CHECK (postRoast >= 0 and postRoast <= 1)
                 );
                 '''
 
@@ -124,11 +125,11 @@ def query_green(conn):
 
     return values
 
-def insert_blend(conn, name, quantity):
-    query = "INSERT INTO blend values (?, ?, ?);"
+def insert_blend(conn, name, quantity, postRoast):
+    query = "INSERT INTO blend values (?, ?, ?, ?);"
     try:
         cur = conn.cursor()
-        cur.execute(query, (None, name, quantity))
+        cur.execute(query, (None, name, quantity, postRoast))
         conn.commit()
     except Error as error:
         print(error)
@@ -169,6 +170,7 @@ def query_blend(conn):
         curr['id'] = item[0]
         curr['name'] = item[1]
         curr['quantity'] = item[2]
+        curr['postRoast'] = item[3]
         values.append(curr)
 
     return values
@@ -276,7 +278,30 @@ def query_cafe(conn):
         values.append(curr)
 
     return values
+    
+def get_blend_contains(conn, b_id):
+    query = '''
+            SELECT g.g_id, g.name, c.percentage from green g
+            JOIN contains c on (g.g_id = c.green)
+            JOIN blend b on (b.b_id = c.blend)
+            WHERE b.b_id = ?;
+            '''
+    try:
+        cur = conn.cursor()
+        results = cur.execute(query, (b_id,))
+    except Error as error:
+        print(error)
+        print("There was a problem joining the cafe table")
+    
+    values = []
+    for item in results:
+        curr = {}
+        curr['id'] = item[0]
+        curr['name'] = item[1]
+        curr['percentage'] = item[2]
+        values.append(curr)
 
+    return values
 
 def drop_tables(conn):
     
@@ -305,13 +330,12 @@ if __name__ == '__main__':
     insert_green(conn, "Colombia El Pariso", 0.0)
     insert_green(conn, "Nicaragua La Trampa", 15)
 
-    update_green_quantity(conn, 2, 50.5)
 
     results = query_green(conn)
     
-    for item in results:
-        if item[2] > 0:
-            print(item)
+    insert_blend(conn, "Seasonal", 100, 1)
+    insert_blend(conn, "Hipster", 45, 0)
+    insert_blend(conn, "Decaf", 6, 0)
 
 
     if conn:
