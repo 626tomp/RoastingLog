@@ -14,20 +14,20 @@ This will be a program to help keep track of roasting progress and calculate vol
   - [x] In the database 
 
 ### STRETCH 1
-- [ ] Be able to calculate the number of roasts required, including smaller 9kg or 4kg roasts
+- [x] Be able to calculate the number of roasts required, including smaller 9kg or 4kg roasts
   - [ ] Be able to alter the options for roast size
 - [ ] Keep track of how many roasts i have done today of each type
 - [ ]  Allow cafes to have multiple blends / single origins
-- [ ]  Handle single origin roasts rather than just blends (might require a database rethink)
-- [ ]  Basic prediction on time to finish roasting (eg. roasts * 20 mins + current time)
+- [x]  Handle single origin roasts rather than just blends (might require a database rethink)
+- [x]  Basic prediction on time to finish roasting (eg. roasts * 20 mins + current time)
 
 
 ### STRETCH 2
 - [ ] Have existing inventory for each cafe before i roast and for this top be subtracted from the amount i have to do
 - [ ] Update blend ratios
-- [ ] Advanced prediction for when i will finish (More accurate - hopefully - with maybe some simple ML (sklearn something))
+- [x] Advanced prediction for when i will finish (More accurate - hopefully - with maybe some simple ML (sklearn something))
 - [ ] A user who has never been shown how to use the program should be able to use it easily - final usability tweaks
-- [ ] Have a button to reset all the values that will change from day to day.
+- [x] Have a button to reset all the values that will change from day to day.
 - [ ] A way to either select, finish Roasting or finish Week
   - [ ] finish roasting should: Move all the roasts that were completed to the quantitiy of each blend in stock
   - [ ] finish week should: do the same as finish roasting, but then subtract the amount of coffee needed for each cafe from this volume to show the leftover coffee volume
