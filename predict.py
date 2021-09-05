@@ -55,10 +55,10 @@ def format_pred(pred, startHTime, startMTime):
 
 	return formatted
 
-def create_pred_window():
+def create_pred_window(big = "0", small = "0"):
 	layout = [  [sg.Text('Update')],
-            [sg.Text("Number of Large Roasts", size = (18,1)), sg.Input("", key=f"BIG_ROAST", size = (11,1))], 
-			[sg.Text("Number of Small Roasts", size = (18,1)), sg.Input("", key=f"SMALL_ROAST", size = (11,1))], 
+            [sg.Text("Number of Large Roasts", size = (18,1)), sg.Input(big, key=f"BIG_ROAST", size = (11,1))], 
+			[sg.Text("Number of Small Roasts", size = (18,1)), sg.Input(small, key=f"SMALL_ROAST", size = (11,1))], 
 			[sg.Text("Start Time (24h)", size = (18,1)), sg.Input("8", key=f"START_HOUR", size = (3,1)), 
 			sg.Text(":", size = (1,1)), sg.Input("00", key=f"START_MIN", size = (3,1))], 
             [sg.Button("Predict!",key="PREDICT"), sg.Cancel()]] 

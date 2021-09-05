@@ -135,6 +135,7 @@ def run_simple_gui(conn, completedToday):
                         #print(f"values[{'-QUANTITY-' + key + '-'}] = {values['-QUANTITY-' + key + '-']} = {blend['quantity']}")
             reset = 1
         if event == "PREDICT":
+            # prefill options maybe?
             predict.create_pred_window()
         if event == "RESET":
             completedToday = {}
