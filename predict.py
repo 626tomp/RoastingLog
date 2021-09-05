@@ -47,9 +47,9 @@ def format_pred(pred, startHTime, startMTime):
 
 	if (endHTime >= 12):
 		endHTime -= 12
-		formatted = f"finish at {endHTime}:{endMTime} PM"
+		formatted = f"finish at {endHTime}:{endMTime:02d} PM"
 	elif (endHTime >= 0):
-		formatted = f"finish at {endHTime}:{endMTime} AM"
+		formatted = f"finish at {endHTime}:{endMTime:02d} AM"
 	else:
 		formatted = "Something went wrong!"
 
