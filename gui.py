@@ -9,6 +9,7 @@ import predict
 
 
 DATABASE_PATH = "temp.db"
+DISABLED_BUTTON_COLOUR = 'grey'
 
 def update_db(conn, b_id, new_quantity):
 
@@ -67,7 +68,7 @@ def popup_test(conn, oldValues):
 
 def run_simple_gui(conn, completedToday):
 
-    sg.theme('SystemDefault')
+    sg.theme('Default1')
     blends = db.query_blend(conn)
     layout = [[
         sg.Text("Name", size = (10, 2)),
@@ -83,35 +84,63 @@ def run_simple_gui(conn, completedToday):
         id = str(item['id'])
         if not id in completedToday:
             completedToday[id] = 0
-        numRoasts = ceil(item['quantity'] / 16) - completedToday[id]
-
-        layout.append([
-            sg.Text(item['name'], size = (10, 1)),
-            sg.Input(item['quantity'], size = (6, 1), key=f"-QUANTITY-{id}-"),
-            sg.Button("-", size=(6, 1), key=f"-decrement-{id}-"),
-            sg.Text(numRoasts, size = (5, 1)),
-            sg.Text(completedToday[id], size = (5, 1)),
-            sg.Button("+", size=(5, 1), key=f"-increment-{id}-")
-        ])
         
-        if not item['postRoast']:
+        if item['postRoast']:
+            numRoasts = ceil(item['quantity'] / 16)
+            if numRoasts <= completedToday[id]:
+                completedToday[id] = numRoasts
+            numRoasts -= completedToday[id]
+            layout.append([
+                sg.Text(item['name'], size = (10, 1)),
+                sg.Input(item['quantity'], size = (6, 1), key=f"-QUANTITY-{id}-"),
+                sg.Button("-", size=(6, 1), key=f"-decrement-{id}-"),
+                sg.Text(numRoasts, size = (5, 1)),
+                sg.Text(completedToday[id], size = (5, 1)),
+                sg.Button("+", size=(5, 1), key=f"-increment-{id}-")
+            ])
+        
+        else:
+            
             contains = db.get_blend_contains(conn, item['id'])
+            parent_id = id
+            roast_sum = 0
+            components = []
             for component in contains:
-                id = "G" + str(component['id'])
+                id = "G" + str(component['id']) + "_" + parent_id
                 if not id in completedToday:
                     completedToday[id] = 0
                 componentQuantity = item['quantity'] * (component['percentage'] / 100)
-                numRoasts = ceil(componentQuantity / 16) - completedToday[id]
-                
+                numRoasts = ceil(componentQuantity / 16)
+                if numRoasts <= completedToday[id]:
+                    completedToday[id] = numRoasts
+                numRoasts -= completedToday[id]
+                roast_sum += completedToday[id]
 
-                layout.append([
+                components.append([
                     sg.Text("  -  " + component['name'], size = (10, 1)),
                     sg.Input(componentQuantity, size = (6, 1), key=f"-QUANTITY-{id}-"),
                     sg.Button("-", size=(6, 1), key=f"-decrement-{id}-"),
-                    sg.Text(numRoasts, size = (5, 1)),
+                    sg.Text(numRoasts, key=f"-numRoasts-{id}-", size = (5, 1)),
                     sg.Text(completedToday[id], size = (5, 1)),
                     sg.Button("+", size=(5, 1), key=f"-increment-{id}-")
                 ])
+            
+            completedToday[parent_id] = roast_sum
+            numRoasts = ceil(item['quantity'] / 16)
+            if numRoasts <= completedToday[parent_id]:
+                completedToday[parent_id] = numRoasts
+            numRoasts -= completedToday[parent_id]
+
+            layout.append([
+                sg.Text(item['name'], size = (10, 1)),
+                sg.Input(item['quantity'], size = (6, 1), key=f"-QUANTITY-{parent_id}-"),
+                sg.Button("-", size=(6, 1), button_color=DISABLED_BUTTON_COLOUR,  disabled=True, key=f"-decrement-{parent_id}-"),
+                sg.Text(numRoasts, size = (5, 1)),
+                sg.Text(completedToday[parent_id], size = (5, 1)),
+                sg.Button("+", size=(5, 1), button_color=DISABLED_BUTTON_COLOUR,disabled=True, key=f"-increment-{parent_id}-")
+            ])
+            for item in components:
+                layout.append(item)
                 
     
     layout.append([sg.Button("Update", key="UPDATE"), sg.Button("Predict", key="PREDICT"), sg.Button("Reset", key="RESET")])
@@ -126,7 +155,7 @@ def run_simple_gui(conn, completedToday):
             break
         if event == "UPDATE":
             for key in completedToday:
-                print(blends)
+                #print(blends)
                 x = re.findall("G\d*", key)
                 if len(x) == 0:
                     blend = get_blend_with_id(blends, key)
@@ -135,8 +164,15 @@ def run_simple_gui(conn, completedToday):
                         #print(f"values[{'-QUANTITY-' + key + '-'}] = {values['-QUANTITY-' + key + '-']} = {blend['quantity']}")
             reset = 1
         if event == "PREDICT":
+            big, small = 0, 0
+            for key in completedToday:
+                if key[0] != 'G': 
+                    curr_blend = get_blend_with_id(blends, key)
+                    if curr_blend['quantity'] <= 9 and curr_blend['quantity'] > 0: small += 1
+                    else: big += ceil(curr_blend['quantity'] / 16)
+                
             # prefill options maybe?
-            predict.create_pred_window()
+            predict.create_pred_window(big, small)
         if event == "RESET":
             completedToday = {}
             reset = 1
@@ -145,16 +181,25 @@ def run_simple_gui(conn, completedToday):
         x = re.findall("-decrement-.*-", event)
         if len(x) != 0:
             id = x[0].split("-")[2]
+            ids = id.split("_")
+            if len(ids) > 1:
+                parent_id = ids[1]
+                if completedToday[parent_id] > 0:
+                    completedToday[parent_id] -= 1
+                    reset = 1
             if completedToday[id] > 0:
                 completedToday[id] -= 1
-                reset = 1
-            elif completedToday[id] != 0:
-                completedToday[id] = 0
                 reset = 1
 
         x = re.findall("-increment-.*-", event)
         if len(x) != 0:
             id = x[0].split("-")[2]
+            ids = id.split("_")
+            if len(ids) > 1:
+                parent_id = ids[1]
+                if completedToday[parent_id] >= 0:
+                    completedToday[parent_id] += 1
+                    reset = 1
             if completedToday[id] >= 0:
                 completedToday[id] += 1
                 reset = 1
@@ -175,12 +220,19 @@ def run_simple_gui(conn, completedToday):
 # MOVE TO HELPER FUNCTIONS
 def get_blend_with_id(blends, id):
     for item in blends:
-        print(f"{item['id']} == {id}")
+        #print(f"{item['id']} == {id}")
         if item['id'] == int(id):
-            print("  returning " + str(item))
+            #print("  returning " + str(item))
             return item
-        else:
-            print("  FALSE")
+    
+    return None
+
+def get_green_with_id(green, id):
+    for item in green:
+        #print(f"{item['id']} == {id}")
+        if item['id'] == int(id):
+            #print("  returning " + str(item))
+            return item
     
     return None
 

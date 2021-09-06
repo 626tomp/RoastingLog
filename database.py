@@ -281,7 +281,7 @@ def query_cafe(conn):
     
 def get_blend_contains(conn, b_id):
     query = '''
-            SELECT g.g_id, g.name, c.percentage from green g
+            SELECT g.g_id, g.name, c.percentage, b.b_id from green g
             JOIN contains c on (g.g_id = c.green)
             JOIN blend b on (b.b_id = c.blend)
             WHERE b.b_id = ?;
@@ -299,6 +299,7 @@ def get_blend_contains(conn, b_id):
         curr['id'] = item[0]
         curr['name'] = item[1]
         curr['percentage'] = item[2]
+        curr['blend_id'] = item[3]
         values.append(curr)
 
     return values
