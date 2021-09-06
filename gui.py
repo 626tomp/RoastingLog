@@ -240,9 +240,7 @@ if __name__ == "__main__":
     conn = db.connect_database(DATABASE_PATH)
     
 
-    if len(sys.argv) >= 2 and sys.argv[1] == "simple":
-        run_simple_gui(conn, {})
-    else:
+    if len(sys.argv) >= 2 and sys.argv[1] == "full":
         layout = create_layout(conn)
         window = sg.Window("Roasting Log", layout)
 
@@ -289,3 +287,5 @@ if __name__ == "__main__":
             window.refresh()
 
         window.close()
+    else:
+        run_simple_gui(conn, {})
