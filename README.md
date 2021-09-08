@@ -2,6 +2,8 @@
 
 This will be a program to help keep track of roasting progress and calculate volume required when roasting coffee.
 
+\* Needs a rework for what task is in each milestone
+
 ## STAGES:
 ### MVP:
 - [ ] Display all cafes and the amount of coffee they need
