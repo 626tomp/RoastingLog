@@ -65,10 +65,7 @@ def popup_test(conn, oldValues):
         window.refresh()
     window.close()
 
-
-def run_simple_gui(conn, completedToday):
-
-    sg.theme('Default1')
+def get_simple_layout(conn, completedToday):
     blends = db.query_blend(conn)
     layout = [[
         sg.Text("Name", size = (10, 2)),
@@ -79,7 +76,7 @@ def run_simple_gui(conn, completedToday):
         sg.Text("Add Roast", size=(5, 2))
     ], [sg.HorizontalSeparator()]]
 
-
+    totalRoasts = {}
     for item in blends:
         id = str(item['id'])
         if not id in completedToday:
@@ -87,6 +84,7 @@ def run_simple_gui(conn, completedToday):
         
         if item['postRoast']:
             numRoasts = ceil(item['quantity'] / 16)
+            totalRoasts[id] = numRoasts
             if numRoasts <= completedToday[id]:
                 completedToday[id] = numRoasts
             numRoasts -= completedToday[id]
@@ -94,8 +92,8 @@ def run_simple_gui(conn, completedToday):
                 sg.Text(item['name'], size = (10, 1)),
                 sg.Input(item['quantity'], size = (6, 1), key=f"-QUANTITY-{id}-"),
                 sg.Button("-", size=(6, 1), key=f"-decrement-{id}-"),
-                sg.Text(numRoasts, size = (5, 1)),
-                sg.Text(completedToday[id], size = (5, 1)),
+                sg.Text(numRoasts, key=f"-numRoasts-{id}-", size = (5, 1)),
+                sg.Text(completedToday[id], key=f"-compToday-{id}-", size = (5, 1)),
                 sg.Button("+", size=(5, 1), key=f"-increment-{id}-")
             ])
         
@@ -111,6 +109,7 @@ def run_simple_gui(conn, completedToday):
                     completedToday[id] = 0
                 componentQuantity = item['quantity'] * (component['percentage'] / 100)
                 numRoasts = ceil(componentQuantity / 16)
+                totalRoasts[id] = numRoasts
                 if numRoasts <= completedToday[id]:
                     completedToday[id] = numRoasts
                 numRoasts -= completedToday[id]
@@ -121,29 +120,39 @@ def run_simple_gui(conn, completedToday):
                     sg.Input(componentQuantity, size = (6, 1), key=f"-QUANTITY-{id}-"),
                     sg.Button("-", size=(6, 1), key=f"-decrement-{id}-"),
                     sg.Text(numRoasts, key=f"-numRoasts-{id}-", size = (5, 1)),
-                    sg.Text(completedToday[id], size = (5, 1)),
+                    sg.Text(completedToday[id], key=f"-compToday-{id}-", size = (5, 1)),
                     sg.Button("+", size=(5, 1), key=f"-increment-{id}-")
                 ])
             
             completedToday[parent_id] = roast_sum
             numRoasts = ceil(item['quantity'] / 16)
+            totalRoasts[parent_id] = numRoasts
             if numRoasts <= completedToday[parent_id]:
                 completedToday[parent_id] = numRoasts
             numRoasts -= completedToday[parent_id]
-
             layout.append([
                 sg.Text(item['name'], size = (10, 1)),
                 sg.Input(item['quantity'], size = (6, 1), key=f"-QUANTITY-{parent_id}-"),
                 sg.Button("-", size=(6, 1), button_color=DISABLED_BUTTON_COLOUR,  disabled=True, key=f"-decrement-{parent_id}-"),
-                sg.Text(numRoasts, size = (5, 1)),
-                sg.Text(completedToday[parent_id], size = (5, 1)),
+                sg.Text(numRoasts, key=f"-numRoasts-{parent_id}-", size = (5, 1)),
+                sg.Text(completedToday[parent_id], key=f"-compToday-{parent_id}-", size = (5, 1)),
                 sg.Button("+", size=(5, 1), button_color=DISABLED_BUTTON_COLOUR,disabled=True, key=f"-increment-{parent_id}-")
             ])
             for item in components:
                 layout.append(item)
                 
-    
-    layout.append([sg.Button("Update", key="UPDATE"), sg.Button("Predict", key="PREDICT"), sg.Button("Reset", key="RESET")])
+    roasts_rem = get_roasts_left(totalRoasts, completedToday)
+    time_rem = get_time_left(roasts_rem)
+    layout.append([sg.Button("Update", key="UPDATE"), sg.Button("Predict", key="PREDICT"), sg.Button("Reset", key="RESET"), 
+    sg.Text(f"Roasts Left: {roasts_rem}", key="ROASTSLEFT"), 
+    sg.Text(f"Time Left: {time_rem[0]}:{time_rem[1]:02d}", key="TIMELEFT")])
+    return blends, completedToday, totalRoasts, layout
+
+
+def run_simple_gui(conn, completedToday):
+
+    sg.theme('Default1')
+    blends, completedToday, totalRoasts, layout = get_simple_layout(conn, completedToday)
     window = sg.Window("Roasting Log - Simple Interface", layout)
     closed = 0
     reset = 0
@@ -186,10 +195,18 @@ def run_simple_gui(conn, completedToday):
                 parent_id = ids[1]
                 if completedToday[parent_id] > 0:
                     completedToday[parent_id] -= 1
-                    reset = 1
+                    window[f'-numRoasts-{parent_id}-'].update(totalRoasts[parent_id] - completedToday[parent_id])
+                    window[f'-compToday-{parent_id}-'].update(completedToday[parent_id])
+
             if completedToday[id] > 0:
                 completedToday[id] -= 1
-                reset = 1
+                window[f'-numRoasts-{id}-'].update(totalRoasts[id] - completedToday[id])
+                window[f'-compToday-{id}-'].update(completedToday[id])
+            
+            roasts_rem = get_roasts_left(totalRoasts, completedToday)
+            time_rem = get_time_left(roasts_rem)
+            window['ROASTSLEFT'].update(f"Roasts Left: {roasts_rem}")
+            window['TIMELEFT'].update(f"Time Left: {time_rem[0]}:{time_rem[1]:02d}")
 
         x = re.findall("-increment-.*-", event)
         if len(x) != 0:
@@ -197,17 +214,25 @@ def run_simple_gui(conn, completedToday):
             ids = id.split("_")
             if len(ids) > 1:
                 parent_id = ids[1]
-                if completedToday[parent_id] >= 0:
+                if completedToday[id] < totalRoasts[id]:
                     completedToday[parent_id] += 1
-                    reset = 1
-            if completedToday[id] >= 0:
+                    window[f'-numRoasts-{parent_id}-'].update(totalRoasts[parent_id] - completedToday[parent_id])
+                    window[f'-compToday-{parent_id}-'].update(completedToday[parent_id])
+            if completedToday[id] < totalRoasts[id]:
                 completedToday[id] += 1
-                reset = 1
+                window[f'-numRoasts-{id}-'].update(totalRoasts[id] - completedToday[id])
+                window[f'-compToday-{id}-'].update(completedToday[id])
+            
+            roasts_rem = get_roasts_left(totalRoasts, completedToday)
+            time_rem = get_time_left(roasts_rem)
+            window['ROASTSLEFT'].update(f"Roasts Left: {roasts_rem}")
+            window['TIMELEFT'].update(f"Time Left: {time_rem[0]}:{time_rem[1]:02d}")
 
         
 
         if reset == 1:
             window.close()
+            #recursively launch the window again with the new info
             run_simple_gui(conn, completedToday)
             closed = 1
             reset = 0
@@ -236,6 +261,24 @@ def get_green_with_id(green, id):
     
     return None
 
+def get_roasts_left(totalRoasts, completedToday):
+    sum = 0
+    for key in totalRoasts: # keys should be the same
+        if "G" not in key:
+            sum += totalRoasts[key]
+            sum -= completedToday[key]
+
+    return sum
+
+def get_time_left(roast_rem):
+    minutes = roast_rem * 20
+    hours = floor(minutes / 60)
+    minutes = minutes % 60
+
+    return hours, minutes
+
+# simplfy and move stuff to other functions
+# move main to another file
 if __name__ == "__main__":
     conn = db.connect_database(DATABASE_PATH)
     
