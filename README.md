@@ -16,7 +16,7 @@ This will be a program to help keep track of roasting progress and calculate vol
 ### STRETCH 1
 - [x] Be able to calculate the number of roasts required, including smaller 9kg or 4kg roasts
   - [ ] Be able to alter the options for roast size
-- [ ] Keep track of how many roasts i have done today of each type
+- [x] Keep track of how many roasts i have done today of each type
 - [ ]  Allow cafes to have multiple blends / single origins
 - [x]  Handle single origin roasts rather than just blends (might require a database rethink)
 - [x]  Basic prediction on time to finish roasting (eg. roasts * 20 mins + current time)
