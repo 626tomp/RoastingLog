@@ -2,7 +2,7 @@
 
 This will be a program to help keep track of roasting progress and calculate volume required when roasting coffee.
 
-\* Needs a rework for what task is in each milestone
+\* Needs a rework for what task is in each milestone - for a more up to date description go to https://github.com/626tomp/RoastingLog/projects/1
 
 ## STAGES:
 ### MVP:
