@@ -33,3 +33,28 @@ This will be a program to help keep track of roasting progress and calculate vol
 - [ ] A way to either select, finish Roasting or finish Week
   - [ ] finish roasting should: Move all the roasts that were completed to the quantitiy of each blend in stock
   - [ ] finish week should: do the same as finish roasting, but then subtract the amount of coffee needed for each cafe from this volume to show the leftover coffee volume
+
+
+## Plan for OOP approach
+Will test - not sure how viable it will be, or if its worth the hassle to change
+
+Program:
+* Cafes: List[Cafe]
+* Roasts: List[Roast]
+* Green: List[Green]
+* CalculsteRoasts()
+* GetRoastFromID(id)
+* AddRoast(ID)
+
+Roasts:
+
+
+Green:
+
+
+Cafe:
+
+
+PostRoast inhgerits from Roast:
+Components: List[Dict]
+PostRoast = True
